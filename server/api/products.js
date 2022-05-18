@@ -24,6 +24,16 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+//view a product
+router.get("/:id", async (req, res, next) => {
+  try {
+    const product = await Product.findByPk(req.params.id);
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
+});
+
 //update a product
 router.put("/:id", async (req, res, next) => {
   try {
