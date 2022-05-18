@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { fetchProducts, deleteProduct } from "../store/products";
 import { Link } from "react-router-dom";
+import AddProduct from "./AddProduct";
 
 export class AllProducts extends Component {
   constructor(props) {
@@ -17,7 +18,9 @@ export class AllProducts extends Component {
 
     return (
       <div>
-        <button>Add a New Item</button>
+        {/* <button>Add a New Item</button> */}
+        <AddProduct />
+        <hr />
         <div />
         <br />
         {products.map(({ id, name, description, price, quantity }) => (
