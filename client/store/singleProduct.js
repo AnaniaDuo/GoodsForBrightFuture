@@ -55,7 +55,6 @@ export const assignProduct = (productId, locationId, quantity, history) => {
           quantity: quantity,
         }
       );
-      console.log("data----", data);
       dispatch(_assignProduct(data));
       history.push("/products");
     } catch (error) {

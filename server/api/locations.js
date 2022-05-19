@@ -23,18 +23,47 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// //view a location
-// router.get("/:id", async (req, res, next) => {
-//   try {
-//     const location = await Location.findOne({
-//       where: { id: req.params.id },
-//       include: Product,
-//     });
-//     res.send(location);
-//   } catch (err) {
-//     next(err);
-//   }
-// });
+//assign all to an inventory
+router.get("/:locationId/assignAll", async (req, res, next) => {
+  const locationId = req.params.locationId;
+
+  try {
+    let result;
+    const allProducts = await Product.findAll();
+
+    for (let i = 0; i < allProducts.length; i++) {
+      const currentProduct = allProducts[i];
+      const productId = currentProduct.id;
+      const quantity = currentProduct.quantity;
+
+      const possibleExistingAssignment = await Location_Product.findOne({
+        where: { locationId, productId },
+      });
+
+      possibleExistingAssignment
+        ? (result = await possibleExistingAssignment.update({
+            quantity: possibleExistingAssignment.quantity + quantity,
+          }))
+        : (result = await Location_Product.create({
+            locationId: locationId,
+            productId: productId,
+            quantity,
+          }));
+
+      //update inventory after assign a product type to a location
+      //ex: Originally, a shop owner has 10,000 books in total. After assign 5,000
+      //books to New York warehouse, they have 5,000 books in unassigned inventory.
+
+      await currentProduct.update({
+        quantity: currentProduct.quantity - quantity,
+      });
+    }
+
+    res.send(result);
+  } catch (err) {
+    next(err);
+  }
+});
 
 //assign inventory to specific location (ex: assign 5000 books to New York Warehouse)
 router.post("/:locationId/:productId", async (req, res, next) => {

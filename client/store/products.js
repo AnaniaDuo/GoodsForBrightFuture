@@ -4,6 +4,7 @@ import axios from "axios";
 const SET_PRODUCTS = "SET_PRODUCTS";
 const DELETE_PRODUCT = "DELETE_PRODUCT";
 const ADD_PRODUCT = "ADD_PRODUCT";
+const ASSIGN_ALL = "ASSIGN_ALL";
 
 //ACTION CREATOR
 export const setProducts = (products) => {
@@ -23,6 +24,13 @@ export const _deleteProduct = (product) => {
 export const _addProduct = (product) => {
   return {
     type: ADD_PRODUCT,
+    product,
+  };
+};
+
+export const _assignAll = (product) => {
+  return {
+    type: ASSIGN_ALL,
     product,
   };
 };
@@ -57,6 +65,20 @@ export const addProduct = (product, history) => {
       const { data } = await axios.post("/api/products", product);
       dispatch(_addProduct(data));
       history.push("/products");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const assignAll = (locationId, history) => {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.get(
+        `/api/locations/${locationId}/assignAll`
+      );
+      dispatch(_assignAll(data));
+      history.push("/");
     } catch (error) {
       console.log(error);
     }
