@@ -3,6 +3,16 @@ const Location = require("../db/models/Location");
 const Product = require("../db/models/Product");
 const Location_Product = require("../db/models/Location_Product");
 
+//view all locations
+router.get("/", async (req, res, next) => {
+  try {
+    const locations = await Location.findAll({ include: Product });
+    res.send(locations);
+  } catch (err) {
+    next(err);
+  }
+});
+
 //create a new location
 router.post("/", async (req, res, next) => {
   try {
@@ -13,6 +23,19 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// //view a location
+// router.get("/:id", async (req, res, next) => {
+//   try {
+//     const location = await Location.findOne({
+//       where: { id: req.params.id },
+//       include: Product,
+//     });
+//     res.send(location);
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+
 //assign inventory to specific location (ex: assign 5000 books to New York Warehouse)
 router.post("/:locationId/:productId", async (req, res, next) => {
   const locationId = req.params.locationId;
@@ -21,13 +44,23 @@ router.post("/:locationId/:productId", async (req, res, next) => {
 
   try {
     const productInInventory = await Product.findByPk(productId);
-    if (productInInventory.quantity < quantity) res.send("Invalid quantity");
+    if (productInInventory.quantity < quantity || quantity < 0)
+      res.send("Invalid quantity");
     else {
-      const result = await Location_Product.create({
-        locationId: locationId,
-        productId: productId,
-        quantity,
+      let result;
+      const possibleExistingAssignment = await Location_Product.findOne({
+        where: { locationId, productId },
       });
+      console.log("possibleAssignment is", possibleExistingAssignment);
+      possibleExistingAssignment
+        ? (result = await possibleExistingAssignment.update({
+            quantity: possibleExistingAssignment.quantity + quantity,
+          }))
+        : (result = await Location_Product.create({
+            locationId: locationId,
+            productId: productId,
+            quantity,
+          }));
 
       //update inventory after assign a product type to a location
       //ex: Originally, a shop owner has 10,000 books in total. After assign 5,000

@@ -28,6 +28,7 @@ export class AddProduct extends React.Component {
   }
 
   render() {
+    console.log("props in all products", this.props);
     const { handleSubmit, handleChange } = this;
     const { name, description, price, quantity } = this.state;
 

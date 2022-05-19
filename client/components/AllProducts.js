@@ -18,11 +18,10 @@ export class AllProducts extends Component {
 
     return (
       <div>
-        {/* <button>Add a New Item</button> */}
         <AddProduct />
         <hr />
-        <div />
-        <br />
+
+        <h2>Unassigned Inventory</h2>
         {products.map(({ id, name, description, price, quantity }) => (
           <div key={id}>
             <Link to={`/products/${id}`}>
@@ -41,6 +40,9 @@ export class AllProducts extends Component {
             <hr />
           </div>
         ))}
+        <Link to="/">
+          <div>Back Home</div>
+        </Link>
       </div>
     );
   }

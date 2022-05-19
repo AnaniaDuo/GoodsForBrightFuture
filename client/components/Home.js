@@ -9,6 +9,7 @@ function Home() {
   }
   return (
     <div>
+      <h2>Welcome to Goods for a Bright Future</h2>
       <button onClick={handleClick}>View All Products</button>
       <Link to="/locations">
         <button>View All Locations</button>
